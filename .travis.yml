@@ -2,10 +2,10 @@ language: go
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_d626980ed8c7_key -iv $encrypted_d626980ed8c7_iv
-  -in Cooling\ Monitoring-1375152f4583.json.enc -out Cooling\ Monitoring-1375152f4583.json
+  -in Cooling\ Monitoring-1375152f4583.json.enc -out appengine.json
   -d
 deploy:
   provider: gae
-  keyfile: "Cooling Monitoring-1375152f4583.json"
+  keyfile: "appengine.json"
   project: "cooling-monitoring"
   on: master
