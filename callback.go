@@ -60,7 +60,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
 	key := datastore.NewIncompleteKey(ctx, "Message", nil)
-	if _, err := datastore.Put(ctx, key, message); err != nil {
+	if _, err := datastore.Put(ctx, key, &message); err != nil {
 		log.Debugf(ctx, "Datastore error %v", err)
 	}
 }
