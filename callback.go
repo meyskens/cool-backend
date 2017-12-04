@@ -41,9 +41,12 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Debugf(ctx, "Got data: %v", info)
+	log.Debugf(ctx, "Got info %v", info)
 
-	uplink := map[string]SigfoxUplinkData{"test": SigfoxUplinkData{DownlinkData: "ok"}}
+	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: "ok"}}
 	response, _ := json.Marshal(uplink)
+
+	log.Debugf(ctx, "Send callback %s", response)
+	w.Header().Add("Content-Type", "application/json")
 	w.Write(response)
 }
