@@ -2,9 +2,10 @@ language: go
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then 
-      openssl aes-256-cbc -K $encrypted_d626980ed8c7_key -iv $encrypted_d626980ed8c7_iv -in Cooling Monitoring-1375152f4583.json.enc -out appengine.json -d;
+      openssl aes-256-cbc -K $encrypted_d626980ed8c7_key -iv $encrypted_d626980ed8c7_iv -in Cooling\ Monitoring-1375152f4583.json.enc -out appengine.json -d;
       sed -i 's/$TOKEN/'$SIGFOX_TOKEN'/g' app.yaml;
-  fi
+    fi
+
 deploy:
   provider: gae
   keyfile: "appengine.json"
