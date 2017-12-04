@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -51,7 +50,8 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	log.Debugf(ctx, "Got info %v", info)
 
-	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: hex.EncodeToString([]byte("ok"))}}
+	// uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: hex.EncodeToString([]byte("ok"))}}
+	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: "deadbeefcafebabe"}}
 	response, _ := json.Marshal(uplink)
 
 	log.Debugf(ctx, "Send callback %s", response)
