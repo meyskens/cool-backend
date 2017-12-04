@@ -45,7 +45,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	log.Debugf(ctx, "Got info %v", info)
 
-	go writeMessageToDatabase(r, info)
+	writeMessageToDatabase(r, info)
 
 	callback := make([]byte, 8)
 	callback[0] = 15 // default timeout
@@ -60,5 +60,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 func writeMessageToDatabase(r *http.Request, message SigfoxCallback) {
 	ctx := appengine.NewContext(r)
 	key := datastore.NewIncompleteKey(ctx, "Message", nil)
-	datastore.Put(ctx, key, message)
+	if _, err := datastore.Put(ctx, key, message); err != nil {
+		log.Debugf(ctx, "Datastore error %v", err)
+	}
 }
