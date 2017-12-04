@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -46,8 +47,9 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	go writeMessageToDatabase(r, info)
 
-	// uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: hex.EncodeToString([]byte("ok"))}}
-	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: "deadbeefcafebabe"}}
+	callback := make([]byte, 8)
+	callback[0] = 15 // default timeout
+	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: hex.EncodeToString(callback)}}
 	response, _ := json.Marshal(uplink)
 
 	log.Debugf(ctx, "Send callback %s", response)
