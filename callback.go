@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 )
 
@@ -43,6 +44,8 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	log.Debugf(ctx, "Got info %v", info)
 
+	go writeMessageToDatabase(r, info)
+
 	// uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: hex.EncodeToString([]byte("ok"))}}
 	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: "deadbeefcafebabe"}}
 	response, _ := json.Marshal(uplink)
@@ -50,4 +53,10 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	log.Debugf(ctx, "Send callback %s", response)
 	w.Header().Add("Content-Type", "application/json")
 	w.Write(response)
+}
+
+func writeMessageToDatabase(r *http.Request, message SigfoxCallback) {
+	ctx := appengine.NewContext(r)
+	key := datastore.NewIncompleteKey(ctx, "Message", nil)
+	datastore.Put(ctx, key, message)
 }
