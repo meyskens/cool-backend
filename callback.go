@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
@@ -12,9 +11,9 @@ import (
 
 // SigfoxCallback contains a  SigFox data callback
 type SigfoxCallback struct {
-	Device string    `json:"device"`
-	Data   string    `json:"data"`
-	Time   time.Time `json:"time"`
+	Device string `json:"device"`
+	Data   string `json:"data"`
+	Time   int    `json:"time"`
 }
 
 // SigfoxUplinkData contains tha uplink callback info
