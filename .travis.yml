@@ -12,3 +12,4 @@ deploy:
   keyfile: "appengine.json"
   project: "cooling-monitoring"
   on: master
+  skip_cleanup: true
