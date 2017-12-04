@@ -23,3 +23,7 @@ func interalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	log.Debugf(ctx, "Internal server error: %v", err)
 	http.Error(w, "Internal server error.", http.StatusInternalServerError)
 }
+
+func unauthorizedError(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Unauthorized", http.StatusUnauthorized)
+}
