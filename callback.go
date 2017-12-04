@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/log"
 )
+
+var sigfoxToken = os.Getenv("SIGFOX_API_TOKEN")
 
 // SigfoxCallback contains a  SigFox data callback
 type SigfoxCallback struct {
@@ -23,6 +26,10 @@ type SigfoxUplinkData struct {
 }
 
 func handleCallback(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("Authorization") != "token "+sigfoxToken {
+		unauthorizedError(w, r)
+		return
+	}
 	ctx := appengine.NewContext(r)
 	if r.Method != "POST" {
 		http.NotFound(w, r)
