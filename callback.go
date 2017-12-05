@@ -64,7 +64,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	writeMessageToDatabase(ctx, info)
 
 	callback := make([]byte, 8)
-	callback[0] = 15 // default timeout
+	callback[0] = byte(getSleep())
 	uplink := map[string]SigfoxUplinkData{info.Device: SigfoxUplinkData{DownlinkData: hex.EncodeToString(callback)}}
 	response, _ := json.Marshal(uplink)
 
@@ -88,4 +88,15 @@ func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
 	if err := uploader.Put(ctx, []*SigfoxCallback{&message}); err != nil {
 		log.Debugf(ctx, "Uploader error %v", err)
 	}
+}
+
+func getSleep() int8 {
+	loc, _ := time.LoadLocation("Europe/Brussels")
+	now := time.Now().In(loc)
+
+	if now.Hour() >= 11 && now.Hour() <= 13 { // during lunch hours
+		return 5
+	}
+
+	return 20
 }
