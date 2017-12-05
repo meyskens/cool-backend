@@ -84,11 +84,8 @@ func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
 	}
 
 	uploader := bq.Dataset("cooling").Table("messages").Uploader()
-	inserts := []*bigquery.StructSaver{}
-	aux := bigquery.StructSaver{Struct: message, Schema: bqSchema}
-	inserts = append(inserts, &aux)
 
-	if err := uploader.Put(ctx, inserts); err != nil {
+	if err := uploader.Put(ctx, []*SigfoxCallback{&message}); err != nil {
 		log.Debugf(ctx, "Uploader error %v", err)
 	}
 }
