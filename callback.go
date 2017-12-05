@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/appengine"
@@ -17,12 +18,13 @@ var sigfoxToken = os.Getenv("SIGFOX_API_TOKEN")
 
 // SigfoxCallback contains a  SigFox data callback
 type SigfoxCallback struct {
-	Device  string  `json:"device"`
-	Data    string  `json:"data"`
-	Time    int     `json:"time"`
-	SNR     float64 `json:"snr"`
-	ACK     bool    `json:"ack"`
-	Station string  `json:"station"`
+	Device   string `json:"device"`
+	Data     string `json:"data"`
+	UnixTime int64  `json:"time"`
+	Time     time.Time
+	SNR      float64 `json:"snr"`
+	ACK      bool    `json:"ack"`
+	Station  string  `json:"station"`
 }
 
 // SigfoxUplinkData contains tha uplink callback info
@@ -53,6 +55,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		interalServerError(w, r, err)
 		return
 	}
+	info.Time = time.Unix(info.UnixTime, 0)
 
 	log.Debugf(ctx, "Got info %v", info)
 
