@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"cloud.google.com/go/bigquery"
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
 )
 
@@ -17,9 +17,12 @@ var sigfoxToken = os.Getenv("SIGFOX_API_TOKEN")
 
 // SigfoxCallback contains a  SigFox data callback
 type SigfoxCallback struct {
-	Device string `json:"device"`
-	Data   string `json:"data"`
-	Time   int    `json:"time"`
+	Device  string  `json:"device"`
+	Data    string  `json:"data"`
+	Time    int     `json:"time"`
+	SNR     float64 `json:"snr"`
+	ACK     bool    `json:"ack"`
+	Station string  `json:"station"`
 }
 
 // SigfoxUplinkData contains tha uplink callback info
@@ -66,8 +69,20 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
-	key := datastore.NewIncompleteKey(ctx, "Message", nil)
-	if _, err := datastore.Put(ctx, key, &message); err != nil {
-		log.Debugf(ctx, "Datastore error %v", err)
+	projectID := appengine.AppID(ctx)
+
+	// Create the BigQuery service.
+	bq, err := bigquery.NewClient(ctx, projectID)
+	if err != nil {
+		log.Debugf(ctx, "could not create service: %v", err)
+		return
+	}
+
+	uploader := bq.Dataset("cooling").Table("messages").Uploader()
+	items := []*SigfoxCallback{
+		&message,
+	}
+	if err := uploader.Put(ctx, items); err != nil {
+		log.Debugf(ctx, "Uploader error %v", err)
 	}
 }
