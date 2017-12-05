@@ -18,14 +18,16 @@ var sigfoxToken = os.Getenv("SIGFOX_API_TOKEN")
 
 // SigfoxCallback contains a  SigFox data callback
 type SigfoxCallback struct {
-	Device   string `json:"device"`
-	Data     string `json:"data"`
-	UnixTime int64  `json:"time"`
-	Time     time.Time
-	SNR      float64 `json:"snr"`
-	ACK      bool    `json:"ack"`
-	Station  string  `json:"station"`
+	Device   string    `json:"device" bigquery:"device"`
+	Data     string    `json:"data" bigquery:"data"`
+	UnixTime int64     `json:"time" bigquery:"-"`
+	Time     time.Time `bigquery:"time"`
+	SNR      float64   `json:"snr" bigquery:"snr"`
+	ACK      bool      `json:"ack" bigquery:"ack"`
+	Station  string    `json:"station" bigquery:"station"`
 }
+
+var bqSchema, _ = bigquery.InferSchema(SigfoxCallback{})
 
 // SigfoxUplinkData contains tha uplink callback info
 type SigfoxUplinkData struct {
@@ -83,7 +85,7 @@ func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
 
 	uploader := bq.Dataset("cooling").Table("messages").Uploader()
 	inserts := []*bigquery.StructSaver{}
-	aux := bigquery.StructSaver{Struct: message}
+	aux := bigquery.StructSaver{Struct: message, Schema: bqSchema}
 	inserts = append(inserts, &aux)
 
 	if err := uploader.Put(ctx, inserts); err != nil {
