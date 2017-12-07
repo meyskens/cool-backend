@@ -28,6 +28,7 @@ type SigfoxCallback struct {
 }
 
 var bqSchema, _ = bigquery.InferSchema(SigfoxCallback{})
+var bqSchemaMeasurements, _ = bigquery.InferSchema(FridgeData{})
 
 // SigfoxUplinkData contains tha uplink callback info
 type SigfoxUplinkData struct {
@@ -91,7 +92,7 @@ func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
 	}
 }
 
-func writeIfoToDatabase(ctx context.Context, message SigfoxCallback) {
+func writeInfoToDatabase(ctx context.Context, message SigfoxCallback) {
 	projectID := appengine.AppID(ctx)
 
 	// Create the BigQuery service.
@@ -101,7 +102,9 @@ func writeIfoToDatabase(ctx context.Context, message SigfoxCallback) {
 		return
 	}
 
-	uploader := bq.Dataset("cooling").Table("measurements").Uploader()
+	dataset := bq.Dataset("cooling")
+	dataset.Table("measurements").Create(ctx, bqSchemaMeasurements)
+	uploader := dataset.Table("measurements").Uploader()
 	data, err := parseInput(message.Data, message.Time)
 	if err != nil {
 		log.Debugf(ctx, "Info parse error %v", err)
