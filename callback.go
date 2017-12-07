@@ -62,6 +62,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	log.Debugf(ctx, "Got info %v", info)
 
 	writeMessageToDatabase(ctx, info)
+	writeInfoToDatabase(ctx, info)
 
 	callback := make([]byte, 8)
 	callback[0] = 15 // default timeout
@@ -86,6 +87,33 @@ func writeMessageToDatabase(ctx context.Context, message SigfoxCallback) {
 	uploader := bq.Dataset("cooling").Table("messages").Uploader()
 
 	if err := uploader.Put(ctx, []*SigfoxCallback{&message}); err != nil {
+		log.Debugf(ctx, "Uploader error %v", err)
+	}
+}
+
+func writeIfoToDatabase(ctx context.Context, message SigfoxCallback) {
+	projectID := appengine.AppID(ctx)
+
+	// Create the BigQuery service.
+	bq, err := bigquery.NewClient(ctx, projectID)
+	if err != nil {
+		log.Debugf(ctx, "could not create service: %v", err)
+		return
+	}
+
+	uploader := bq.Dataset("cooling").Table("measurements").Uploader()
+	data, err := parseInput(message.Data, message.Time)
+	if err != nil {
+		log.Debugf(ctx, "Info parse error %v", err)
+		return
+	}
+
+	dbIn := []*FridgeData{}
+	for _, dataPoint := range data {
+		dbIn = append(dbIn, &dataPoint)
+	}
+
+	if err := uploader.Put(ctx, dbIn); err != nil {
 		log.Debugf(ctx, "Uploader error %v", err)
 	}
 }
