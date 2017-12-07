@@ -102,9 +102,7 @@ func writeInfoToDatabase(ctx context.Context, message SigfoxCallback) {
 		return
 	}
 
-	dataset := bq.Dataset("cooling")
-	dataset.Table("measurements").Create(ctx, &bigquery.TableMetadata{Schema: bqSchemaMeasurements})
-	uploader := dataset.Table("measurements").Uploader()
+	uploader := bq.Dataset("cooling").Table("measurements").Uploader()
 	data, err := parseInput(message.Data, message.Time)
 	if err != nil {
 		log.Debugf(ctx, "Info parse error %v", err)
