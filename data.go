@@ -19,20 +19,20 @@ type FridgeData struct {
 
 func parseInput(in string, timeSent time.Time) ([]FridgeData, error) {
 	in = makeDataSane(in)
-	data, err := parseHex(in)
-	if err != nil {
-		return nil, err
-	}
 	out := []FridgeData{}
 
-	if check := len(data) % 8; check != 0 {
+	if check := len(in) % 8; check != 0 {
 		return nil, errors.New("not right amout of bytes")
 	}
 
 	dataPerNode := []string{}
 
-	for i := 0; i < len(data); i += 8 {
-		dataPerNode = append(dataPerNode, data[i:i+8])
+	for i := 0; i < len(in); i += 8 {
+		data, err := parseHex(in[i : i+8])
+		if err != nil {
+			return nil, err
+		}
+		dataPerNode = append(dataPerNode, data)
 	}
 
 	for _, d := range dataPerNode {

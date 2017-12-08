@@ -132,6 +132,37 @@ func Test_parseInput(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "test 3 nodes",
+			args: args{
+				in:       "0264081501cb7195013461b7",
+				timeSent: now,
+			},
+			want: []FridgeData{
+				FridgeData{
+					FridgeID:     "2",
+					Time:         now,
+					Temperature:  2.1,
+					Humidity:     1,
+					DoorOpenings: 3,
+				},
+				FridgeData{
+					FridgeID:     "3",
+					Time:         now,
+					Temperature:  1.1,
+					Humidity:     1,
+					DoorOpenings: 1,
+				},
+				FridgeData{
+					FridgeID:     "4",
+					Time:         now,
+					Temperature:  1.1,
+					Humidity:     1,
+					DoorOpenings: 1,
+				},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
