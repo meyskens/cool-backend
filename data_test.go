@@ -85,6 +85,14 @@ func Test_makeDataSane(t *testing.T) {
 			},
 			want: "21b937",
 		},
+		{
+			name: "test real insane data",
+			args: args{
+				in: "0264081501cb7195013461b7",
+				//   013461B7 01CB7195 02640815
+			},
+			want: "013461b701cb719502640815",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -64,9 +64,14 @@ func parseHex(in string) (string, error) {
 }
 
 func makeDataSane(in string) string {
+	per := 2
+	if len(in) > 8 { // if multiple SigFox.write happen it gets even weirder
+		per = 8
+	}
+
 	parts := []string{}
-	for i := 0; i < len(in); i += 2 {
-		parts = append(parts, in[i:i+2])
+	for i := 0; i < len(in); i += per {
+		parts = append(parts, in[i:i+per])
 	}
 	reverse(parts)
 
