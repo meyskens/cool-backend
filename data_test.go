@@ -40,6 +40,14 @@ func Test_parseHex(t *testing.T) {
 			wantErr: false,
 			want:    "20210103",
 		},
+		{
+			name: "dummy input",
+			args: args{
+				in: "013ee8a0",
+			},
+			wantErr: false,
+			want:    "20900000",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -84,6 +92,13 @@ func Test_makeDataSane(t *testing.T) {
 				in: "37b92100",
 			},
 			want: "21b937",
+		},
+		{
+			name: "test weird 0 pad",
+			args: args{
+				in: "00000000a0e83e01",
+			},
+			want: "013ee8a0",
 		},
 		{
 			name: "test real insane data",

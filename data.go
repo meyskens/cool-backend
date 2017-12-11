@@ -64,6 +64,10 @@ func parseHex(in string) (string, error) {
 }
 
 func makeDataSane(in string) string {
+	in = filterZeros(in)
+	fmt.Println(in)
+	fmt.Println(len(in))
+
 	per := 2
 	if len(in) > 8 { // if multiple SigFox.write happen it gets even weirder
 		per = 8
@@ -87,4 +91,25 @@ func reverse(ss []string) {
 	for i := 0; i < len(ss)/2; i++ {
 		ss[i], ss[last-i] = ss[last-i], ss[i]
 	}
+}
+
+func filterZeros(in string) string {
+	hadNonZero := false
+	lastChar := -1
+	for i := 0; i < len(in); i++ {
+		if in[i] == '0' && !hadNonZero {
+			lastChar = i
+		} else {
+			hadNonZero = true
+		}
+	}
+	if lastChar >= 0 {
+		in = in[lastChar+1:]
+	}
+
+	if (len(in) % 2) != 0 {
+		in = "0" + in
+	}
+
+	return in
 }
