@@ -1,0 +1,4 @@
+cron:
+- description: keep backend alive
+  url: /
+  schedule: every 5 mins

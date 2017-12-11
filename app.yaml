@@ -8,8 +8,3 @@ handlers:
 
 env_variables:
   SIGFOX_API_TOKEN: '$TOKEN'
-
-cron:
-- description: keep backend alive
-  url: /
-  schedule: every 5 mins
